@@ -1,6 +1,5 @@
 """
 Models for Account
-
 All of the models are stored in this module
 """
 import logging
@@ -12,24 +11,22 @@ logger = logging.getLogger("flask.app")
 # Create the SQLAlchemy object to be initialized later in init_db()
 db = SQLAlchemy()
 
-
 class DataValidationError(Exception):
-    """Used for an data validation errors when deserializing"""
-
+    """Used for data validation errors when deserializing"""
+    pass
 
 def init_db(app):
     """Initialize the SQLAlchemy app"""
     Account.init_db(app)
 
-
 ######################################################################
-#  P E R S I S T E N T   B A S E   M O D E L
+#  PERSISTENT BASE MODEL
 ######################################################################
 class PersistentBase:
     """Base class added persistent methods"""
 
     def __init__(self):
-        self.id = None  # pylint: disable=invalid-name
+        self.id = None
 
     def create(self):
         """
@@ -71,26 +68,24 @@ class PersistentBase:
 
     @classmethod
     def find(cls, by_id):
-        """Finds a record by it's ID"""
+        """Finds a record by its ID"""
         logger.info("Processing lookup for id %s ...", by_id)
         return cls.query.get(by_id)
 
-
 ######################################################################
-#  A C C O U N T   M O D E L
+#  ACCOUNT MODEL
 ######################################################################
 class Account(db.Model, PersistentBase):
     """
     Class that represents an Account
     """
-
     app = None
 
     # Table Schema
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64))
-    email = db.Column(db.String(64))
-    address = db.Column(db.String(256))
+    name = db.Column(db.String(64), nullable=False)
+    email = db.Column(db.String(64), nullable=False)
+    address = db.Column(db.String(256), nullable=False)
     phone_number = db.Column(db.String(32), nullable=True)  # phone number is optional
     date_joined = db.Column(db.Date(), nullable=False, default=date.today())
 
