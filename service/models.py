@@ -26,26 +26,22 @@ class PersistentBase:
     """Base class added persistent methods"""
 
     def __init__(self):
-        self.id = None
+        self.id = None  # pylint: disable=invalid-name
 
     def create(self):
-        """
-        Creates a Account to the database
-        """
+        """Creates an Account to the database"""
         logger.info("Creating %s", self.name)
         self.id = None  # id must be none to generate next primary key
         db.session.add(self)
         db.session.commit()
 
     def update(self):
-        """
-        Updates a Account to the database
-        """
+        """Updates an Account to the database"""
         logger.info("Updating %s", self.name)
         db.session.commit()
 
     def delete(self):
-        """Removes a Account from the data store"""
+        """Removes an Account from the data store"""
         logger.info("Deleting %s", self.name)
         db.session.delete(self)
         db.session.commit()
@@ -76,16 +72,14 @@ class PersistentBase:
 #  ACCOUNT MODEL
 ######################################################################
 class Account(db.Model, PersistentBase):
-    """
-    Class that represents an Account
-    """
+    """Class that represents an Account"""
     app = None
 
     # Table Schema
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), nullable=False)
-    email = db.Column(db.String(64), nullable=False)
-    address = db.Column(db.String(256), nullable=False)
+    name = db.Column(db.String(64))
+    email = db.Column(db.String(64))
+    address = db.Column(db.String(256))
     phone_number = db.Column(db.String(32), nullable=True)  # phone number is optional
     date_joined = db.Column(db.Date(), nullable=False, default=date.today())
 
@@ -93,7 +87,7 @@ class Account(db.Model, PersistentBase):
         return f"<Account {self.name} id=[{self.id}]>"
 
     def serialize(self):
-        """Serializes a Account into a dictionary"""
+        """Serializes an Account into a dictionary"""
         return {
             "id": self.id,
             "name": self.name,
@@ -105,7 +99,7 @@ class Account(db.Model, PersistentBase):
 
     def deserialize(self, data):
         """
-        Deserializes a Account from a dictionary
+        Deserializes an Account from a dictionary
 
         Args:
             data (dict): A dictionary containing the resource data
