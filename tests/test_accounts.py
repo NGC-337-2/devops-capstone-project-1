@@ -6,7 +6,7 @@ using Test-Driven Development (TDD) practices.
 import json
 from service import app
 from service.models import Account, db, DataValidationError
-from nose.tools import assert_equal, assert_true, assert_false, assert_raises
+from nose.tools import assert_equal, assert_true, assert_false, assert_raises,assert_in
 import logging
 
 # Disable noisy logging for cleaner test output
@@ -14,6 +14,7 @@ logging.disable(logging.CRITICAL)
 
 class TestAccountService:
     """Test cases for Account Service"""
+    
     
     def setup(self):
         """
@@ -208,3 +209,27 @@ class TestAccountService:
         """Should return 404 when deleting non-existent account"""
         response = self.app.delete("/accounts/99999")
         assert_equal(response.status_code, 404)
+
+    ######################################################################
+    #  T E S T   S E C U R I T Y   H E A D E R S
+    ######################################################################
+    
+    def test_security_headers(self):
+        """Should return X-Frame-Options header via Talisman"""
+        response = self.app.get("/health")
+        
+        # Check for Frame options protection
+        assert_true(response.headers.get("X-Frame-Options"))
+        # Check for Strict Transport Security (optional depending on config)
+        assert_in("Content-Security-Policy", response.headers)
+    
+    def test_cors_enabled(self):
+        """Should allow Cross-Origin requests"""
+        # Send an OPTIONS request (preflight)
+        response = self.app.options(
+            "/accounts",
+            headers={"Origin": "http://localhost:3000"}
+        )
+        # Verify CORS headers are present
+        assert_in(response.status_code, [200, 204])  # Accept either
+        assert_in("Access-Control-Allow-Origin", response.headers)
