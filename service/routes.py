@@ -36,7 +36,7 @@ def index():
 def health_check():
     """Health check endpoint"""
     logger.info("Health check requested")
-    return jsonify({"status": "healthy"}), 200
+    return jsonify({"status": "OK"}), 200
 
 ######################################################################
 #  CREATE ACCOUNT ROUTE (Fixed tuple issue)

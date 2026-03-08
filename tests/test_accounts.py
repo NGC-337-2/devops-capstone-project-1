@@ -50,7 +50,7 @@ class TestAccountService:
         response = self.app.get("/health")
         assert_equal(response.status_code, 200)
         data = json.loads(response.data)
-        assert_equal(data["status"], "healthy")
+        assert_equal(data["status"], "OK")
 
     ######################################################################
     #  R E A D   A C C O U N T   T E S T S
