@@ -14,9 +14,9 @@ logging.disable(logging.CRITICAL)
 
 class TestAccountService:
     """Test cases for Account Service"""
-    
-    
-    def setup(self):
+
+
+    def setUp(self):
         """
         Run before each test case.
         Configures the app for testing mode and initializes an in-memory database.
@@ -25,14 +25,14 @@ class TestAccountService:
         app.config["DEBUG"] = False
         # Override to SQLite in-memory for fast, isolated tests
         app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
-        
+
         self.app = app.test_client()
         db.init_app(app)
         app.app_context().push()
         db.create_all()  # Create tables
         self.reset_database()
-    
-    def teardown(self):
+
+    def tearDown(self):
         """Run after each test case to clean up."""
         db.session.remove()
         db.drop_all()
