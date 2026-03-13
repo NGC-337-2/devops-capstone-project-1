@@ -12,7 +12,7 @@ logger = logging.getLogger("flask.app")
 db = SQLAlchemy()
 
 class DataValidationError(Exception):
-    """Used for data validation errors when deserializing"""
+    """Used for an data validation errors when deserializing"""
     pass
 
 def init_db(app):
@@ -20,28 +20,28 @@ def init_db(app):
     Account.init_db(app)
 
 ######################################################################
-#  PERSISTENT BASE MODEL
+#  P E R S I S T E N T   B A S E   M O D E L
 ######################################################################
 class PersistentBase:
     """Base class added persistent methods"""
-
+    
     def __init__(self):
         self.id = None  # pylint: disable=invalid-name
 
     def create(self):
-        """Creates an Account to the database"""
+        """Creates a Account to the database"""
         logger.info("Creating %s", self.name)
         self.id = None  # id must be none to generate next primary key
         db.session.add(self)
         db.session.commit()
 
     def update(self):
-        """Updates an Account to the database"""
+        """Updates a Account to the database"""
         logger.info("Updating %s", self.name)
         db.session.commit()
 
     def delete(self):
-        """Removes an Account from the data store"""
+        """Removes a Account from the data store"""
         logger.info("Deleting %s", self.name)
         db.session.delete(self)
         db.session.commit()
@@ -64,30 +64,32 @@ class PersistentBase:
 
     @classmethod
     def find(cls, by_id):
-        """Finds a record by its ID"""
+        """Finds a record by it's ID"""
         logger.info("Processing lookup for id %s ...", by_id)
         return cls.query.get(by_id)
 
 ######################################################################
-#  ACCOUNT MODEL
+#  A C C O U N T   M O D E L
 ######################################################################
 class Account(db.Model, PersistentBase):
     """Class that represents an Account"""
+    
+    __tablename__ = "accounts"
     app = None
 
-    # Table Schema
+    # Table Schema - NOTE: nullable=False for required fields
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64))
-    email = db.Column(db.String(64))
-    address = db.Column(db.String(256))
-    phone_number = db.Column(db.String(32), nullable=True)  # phone number is optional
+    name = db.Column(db.String(64), nullable=False)
+    email = db.Column(db.String(64), nullable=False)
+    address = db.Column(db.String(256), nullable=False)
+    phone_number = db.Column(db.String(32), nullable=True)
     date_joined = db.Column(db.Date(), nullable=False, default=date.today())
 
     def __repr__(self):
         return f"<Account {self.name} id=[{self.id}]>"
 
     def serialize(self):
-        """Serializes an Account into a dictionary"""
+        """Serializes a Account into a dictionary"""
         return {
             "id": self.id,
             "name": self.name,
@@ -98,12 +100,7 @@ class Account(db.Model, PersistentBase):
         }
 
     def deserialize(self, data):
-        """
-        Deserializes an Account from a dictionary
-
-        Args:
-            data (dict): A dictionary containing the resource data
-        """
+        """Deserializes a Account from a dictionary"""
         try:
             self.name = data["name"]
             self.email = data["email"]
@@ -125,10 +122,6 @@ class Account(db.Model, PersistentBase):
 
     @classmethod
     def find_by_name(cls, name):
-        """Returns all Accounts with the given name
-
-        Args:
-            name (string): the name of the Accounts you want to match
-        """
+        """Returns all Accounts with the given name"""
         logger.info("Processing name query for %s ...", name)
         return cls.query.filter(cls.name == name)
