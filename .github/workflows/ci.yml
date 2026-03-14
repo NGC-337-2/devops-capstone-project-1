@@ -16,10 +16,10 @@ jobs:
     
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     
@@ -34,11 +34,10 @@ jobs:
         flake8 service tests --count --select=E9,F63,F7,F82 --show-source --statistics
       continue-on-error: true
     
-    - name: Test with nosetests (Red-Green Cycle Check)
+    - name: Test with nose2 (Red-Green Cycle Check)
       run: |
         echo "=== Running Tests ==="
-        nosetests --with-coverage --cover-package=service --cover-min-percentage=95 --verbose
+        nose2 -v --with-coverage --cover-package=service
     
     - name: Verify Coverage > 95%
-      run: |
-        nosetests --with-coverage --cover-package=service 2>&1 | grep -E "TOTAL|OK|FAILED"
+      run: coverage report --fail-under=95 --include="service/*" --show-missing
