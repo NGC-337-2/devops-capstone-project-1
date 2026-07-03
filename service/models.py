@@ -11,9 +11,11 @@ logger = logging.getLogger("flask.app")
 # Create the SQLAlchemy object to be initialized later in init_db()
 db = SQLAlchemy()
 
+
 class DataValidationError(Exception):
     """Used for an data validation errors when deserializing"""
     pass
+
 
 def init_db(app):
     """Initialize the SQLAlchemy app"""
@@ -22,9 +24,11 @@ def init_db(app):
 ######################################################################
 #  P E R S I S T E N T   B A S E   M O D E L
 ######################################################################
+
+
 class PersistentBase:
     """Base class added persistent methods"""
-    
+
     def __init__(self):
         self.id = None  # pylint: disable=invalid-name
 
@@ -71,9 +75,11 @@ class PersistentBase:
 ######################################################################
 #  A C C O U N T   M O D E L
 ######################################################################
+
+
 class Account(db.Model, PersistentBase):
     """Class that represents an Account"""
-    
+
     __tablename__ = "accounts"
     app = None
 
@@ -112,7 +118,9 @@ class Account(db.Model, PersistentBase):
             else:
                 self.date_joined = date.today()
         except KeyError as error:
-            raise DataValidationError("Invalid Account: missing " + error.args[0]) from error
+            raise DataValidationError(
+                "Invalid Account: missing " + error.args[0]
+            ) from error
         except TypeError as error:
             raise DataValidationError(
                 "Invalid Account: body of request contained "

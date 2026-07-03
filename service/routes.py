@@ -5,13 +5,14 @@ This module contains the REST API endpoints for the Account service
 import logging
 from flask import jsonify, request, make_response
 from service import app
-from service.models import Account, db, DataValidationError
+from service.models import Account, DataValidationError
 
 logger = logging.getLogger("flask.app")
 
 ######################################################################
 #  UTILITY FUNCTIONS
 ######################################################################
+
 
 def error_response(message, status_code):
     """Helper function to return error responses"""
@@ -21,6 +22,7 @@ def error_response(message, status_code):
 ######################################################################
 #  HOME PAGE ROUTE (Fixes 404 error on "/")
 ######################################################################
+
 
 @app.route("/", methods=["GET"])
 def index():
@@ -32,6 +34,7 @@ def index():
 #  HEALTH CHECK ROUTE (Returns "OK" instead of "healthy")
 ######################################################################
 
+
 @app.route("/health", methods=["GET"])
 def health_check():
     """Health check endpoint"""
@@ -41,6 +44,7 @@ def health_check():
 ######################################################################
 #  CREATE ACCOUNT ROUTE (Fixed tuple issue)
 ######################################################################
+
 
 @app.route("/accounts", methods=["POST"])
 def create_account():
@@ -69,6 +73,7 @@ def create_account():
 #  READ ACCOUNT ROUTE
 ######################################################################
 
+
 @app.route("/accounts/<int:account_id>", methods=["GET"])
 def read_account(account_id):
     """Read a single Account"""
@@ -86,6 +91,7 @@ def read_account(account_id):
 ######################################################################
 #  UPDATE ACCOUNT ROUTE
 ######################################################################
+
 
 @app.route("/accounts/<int:account_id>", methods=["PUT"])
 def update_account(account_id):
@@ -114,6 +120,7 @@ def update_account(account_id):
 #  DELETE ACCOUNT ROUTE
 ######################################################################
 
+
 @app.route("/accounts/<int:account_id>", methods=["DELETE"])
 def delete_account(account_id):
     """Delete an Account"""
@@ -132,6 +139,7 @@ def delete_account(account_id):
 ######################################################################
 #  LIST ALL ACCOUNTS ROUTE
 ######################################################################
+
 
 @app.route("/accounts", methods=["GET"])
 def list_accounts():

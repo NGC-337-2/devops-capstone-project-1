@@ -6,13 +6,13 @@ using Test-Driven Development (TDD) practices.
 import json
 from service import app
 from service.models import Account, db, DataValidationError
-from nose.tools import assert_equal, assert_true, assert_false, assert_raises,assert_in
+import unittest
 import logging
 
 # Disable noisy logging for cleaner test output
 logging.disable(logging.CRITICAL)
 
-class TestAccountService:
+class TestAccountService(unittest.TestCase):
     """Test cases for Account Service"""
 
 
@@ -49,9 +49,9 @@ class TestAccountService:
     def test_health_check(self):
         """Should return healthy status when app is running"""
         response = self.app.get("/health")
-        assert_equal(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
-        assert_equal(data["status"], "OK")
+        self.assertEqual(data["status"], "OK")
 
     ######################################################################
     #  R E A D   A C C O U N T   T E S T S
@@ -68,11 +68,11 @@ class TestAccountService:
         response = self.app.get(f"/accounts/{account_id}")
         
         # ASSERT
-        assert_equal(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
-        assert_equal(data["name"], "John Doe")
-        assert_equal(data["email"], "john@example.com")
-        assert_equal(data["address"], "123 Main St")
+        self.assertEqual(data["name"], "John Doe")
+        self.assertEqual(data["email"], "john@example.com")
+        self.assertEqual(data["address"], "123 Main St")
     
     def test_read_account_not_found(self):
         """Should return 404 when account does not exist"""
@@ -80,9 +80,9 @@ class TestAccountService:
         response = self.app.get("/accounts/99999")
         
         # ASSERT
-        assert_equal(response.status_code, 404)
+        self.assertEqual(response.status_code, 404)
         data = json.loads(response.data)
-        assert_equal(data["error"], "Account not found")
+        self.assertEqual(data["error"], "Account not found")
 
     ######################################################################
     #  L I S T   A C C O U N T S   T E S T S
@@ -98,10 +98,10 @@ class TestAccountService:
         response = self.app.get("/accounts")
         
         # ASSERT
-        assert_equal(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
-        assert_true(isinstance(data, list))
-        assert_equal(len(data), 2)
+        self.assertTrue(isinstance(data, list))
+        self.assertEqual(len(data), 2)
     
     def test_list_accounts_empty(self):
         """Should return empty list when no accounts exist"""
@@ -112,9 +112,9 @@ class TestAccountService:
         response = self.app.get("/accounts")
         
         # ASSERT
-        assert_equal(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
-        assert_equal(len(data), 0)
+        self.assertEqual(len(data), 0)
 
     ######################################################################
     #  U P D A T E   A C C O U N T   T E S T S
@@ -143,14 +143,14 @@ class TestAccountService:
         )
         
         # ASSERT
-        assert_equal(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
-        assert_equal(data["name"], "Jane Doe")
-        assert_equal(data["email"], "jane.doe@example.com")
+        self.assertEqual(data["name"], "Jane Doe")
+        self.assertEqual(data["email"], "jane.doe@example.com")
         
         # VERIFY IN DATABASE
         updated_account = Account.find(account_id)
-        assert_equal(updated_account.name, "Jane Doe")
+        self.assertEqual(updated_account.name, "Jane Doe")
     
     def test_update_account_not_found(self):
         """Should return 404 when updating non-existent account"""
@@ -160,7 +160,7 @@ class TestAccountService:
             json=update_data,
             content_type="application/json"
         )
-        assert_equal(response.status_code, 404)
+        self.assertEqual(response.status_code, 404)
     
     def test_update_account_invalid_data(self):
         """Should return 400 when update data is invalid (missing required fields)"""
@@ -180,9 +180,9 @@ class TestAccountService:
         )
         
         # ASSERT
-        assert_equal(response.status_code, 400)
+        self.assertEqual(response.status_code, 400)
         data = json.loads(response.data)
-        assert_equal(data["status"], 400)
+        self.assertEqual(data["status"], 400)
 
     ######################################################################
     #  D E L E T E   A C C O U N T   T E S T S
@@ -199,16 +199,16 @@ class TestAccountService:
         response = self.app.delete(f"/accounts/{account_id}")
         
         # ASSERT
-        assert_equal(response.status_code, 204)
+        self.assertEqual(response.status_code, 204)
         
         # VERIFY GONE
         deleted_account = Account.find(account_id)
-        assert_false(deleted_account)
+        self.assertIsNone(deleted_account)
     
     def test_delete_account_not_found(self):
         """Should return 404 when deleting non-existent account"""
         response = self.app.delete("/accounts/99999")
-        assert_equal(response.status_code, 404)
+        self.assertEqual(response.status_code, 404)
 
     ######################################################################
     #  T E S T   S E C U R I T Y   H E A D E R S
@@ -219,9 +219,9 @@ class TestAccountService:
         response = self.app.get("/health")
         
         # Check for Frame options protection
-        assert_true(response.headers.get("X-Frame-Options"))
+        self.assertTrue(response.headers.get("X-Frame-Options"))
         # Check for Strict Transport Security (optional depending on config)
-        assert_in("Content-Security-Policy", response.headers)
+        self.assertIn("Content-Security-Policy", response.headers)
     
     def test_cors_enabled(self):
         """Should allow Cross-Origin requests"""
@@ -231,5 +231,5 @@ class TestAccountService:
             headers={"Origin": "http://localhost:3000"}
         )
         # Verify CORS headers are present
-        assert_in(response.status_code, [200, 204])  # Accept either
-        assert_in("Access-Control-Allow-Origin", response.headers)
+        self.assertIn(response.status_code, [200, 204])  # Accept either
+        self.assertIn("Access-Control-Allow-Origin", response.headers)
