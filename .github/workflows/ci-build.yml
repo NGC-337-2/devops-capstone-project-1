@@ -46,7 +46,7 @@ jobs:
 
       - name: Run unit tests with nose
         # Options are not necessary here because they are already predefined in setup.cfg
-        run: nosetests
+        run: nose2
         env:
           # Config Syntax: "postgresql://postgres:{password}@{service}:{port}/{database}"
           DATABASE_URI: postgresql://postgres:pgs3cr3t@postgres:5432/testdb
